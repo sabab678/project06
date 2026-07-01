@@ -1,7 +1,8 @@
 import { User } from '../model/user.model.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken' 
-import sendEmail from '../../utils/sendEmail.js'
+// import sendEmail from '../../utils/sendEmail.js'
+import sendEmail from '../utils/sendEmail.js'
 import cookieParser from 'cookie-parser'
 
 

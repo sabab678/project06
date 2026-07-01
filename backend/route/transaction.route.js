@@ -1,12 +1,12 @@
 import express from "express";
 import{getTransaction, createTransaction, updateTransaction} from '../controller/transactionController.js'
 import isjwtVerify from '../middleware/isJWTvalid.js'
-import jwtVerify from "../middleware/isJWTvalid.js";
+import jwtVerify from "../middleware/jwtVerify.js";
 
 const route = express.Router()
 
 
-route.post('/create', isjwtVerify, createTransaction)
+route.post('/create', jwtVerify, createTransaction)
 route.get('/get', isjwtVerify, getTransaction)
 route.put('/update', isjwtVerify, updateTransaction)
 
