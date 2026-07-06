@@ -7,6 +7,7 @@ import Register from './page/Register.jsx'
 import Login from './page/Login.jsx'
 import OTP from './page/OTP.jsx'
 import Profile from './page/Profile.jsx'
+import History from './page/History.jsx'
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/otp" element={<OTP />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/history" element={<History />} />
       </Routes>
       
     </Router> 

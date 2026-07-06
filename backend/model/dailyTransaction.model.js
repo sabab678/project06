@@ -8,24 +8,19 @@ const transactionSchema = new mongoose.Schema({
         ref: 'User'
     },
     date: {
-        type: Date,
-        default: () => new Date().toISOString().split('T')[0]
+        type: String,
+        required: true
+        // type: Date,
+        // default: () => new Date().toISOString().split('T')[0]
     },
-    income: {
-        type: Number,
-        default: 0
+    income : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Income"
     },
-    expenses: [{
-        amount:{
-            type: Number,
-            default: 0
-        },
-        category: {
-            type: String,
-        }
-        
-    }
-    ],
+    expenses:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Expenses"
+    },
     note:{
         type:String,
         maxlength: [255, 'Note cannot be longer than 255 characters'], // <-- Sets the limit and a custom error message
