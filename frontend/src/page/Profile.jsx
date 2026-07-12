@@ -25,6 +25,8 @@ function Profile() {
     note: "",
   });
 
+  let [balance, setBalance] = useState(null)
+
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -74,6 +76,12 @@ function Profile() {
     }
   };
 
+  const balanceAPI = async()=>{
+    const res = await api.get('/transaction/balance')
+    setBalance(res.data.balance.balance)
+  }
+  balanceAPI()
+
   return (
     <div className="min-h-screen bg-slate-900 text-white flex">
 
@@ -114,6 +122,9 @@ function Profile() {
 
         <h1 className="text-4xl font-bold text-center mb-10">
           Personal Finance Management
+        </h1>
+        <h1 className="text-4xl font-bold text-center mb-10">
+          Balance:  {balance}
         </h1>
 
         <div className="grid grid-cols-2 gap-10">

@@ -1,5 +1,5 @@
 import express from "express";
-import{getIncomeTransaction, getExpensesTransaction, updateTransaction, createIncome, createExpenses} from '../controller/transactionController.js'
+import{getIncomeTransaction, getExpensesTransaction, updateTransaction, createIncome, createExpenses, everydayTransaction, balance} from '../controller/transactionController.js'
 import isjwtVerify from '../middleware/isJWTvalid.js'
 import jwtVerify from "../middleware/jwtVerify.js";
 
@@ -11,6 +11,8 @@ route.post('/income', jwtVerify, createIncome)
 route.post('/expenses', jwtVerify, createExpenses)
 route.post('/getIncomeTransaction', jwtVerify, getIncomeTransaction)
 route.post('/getExpensesTransaction', jwtVerify, getExpensesTransaction)
+route.post('/everyDayTransaction', jwtVerify, everydayTransaction)
+route.get('/balance', jwtVerify, balance)
 route.put('/update', isjwtVerify, updateTransaction)
 
 

@@ -57,7 +57,7 @@ const createExpenses = async (req, res) => {
                 {
                     $inc: { balance: -amount }
                 },
-                { new: true }
+                {returnDocument: "after"}
             );
         }
 
@@ -87,8 +87,6 @@ const createIncome = async (req, res) => {
         const { date, amount, category, gainFrom, note } = req.body
 
         let balance = await Balance.findOne({ userId: req.user._id })
-        // console.log(balance)
-        // console.log(balance.balance)
 
         if (balance === null) {
             const currentBalance = await Balance.create({ userId: req.user._id, balance: amount })
@@ -98,9 +96,16 @@ const createIncome = async (req, res) => {
                 {
                     $inc: { balance: amount }
                 },
-                { new: true }
+                {returnDocument: "after"}
             );
         }
+
+        // await Balance.findByIdAndUpdate({userId:req.user._id},
+        //         {
+        //             $inc: { balance: amount }
+        //         },
+        //         { new: true }
+        // )
 
 
         const income = await Income.create({
@@ -204,12 +209,140 @@ const getExpensesTransaction = async (req, res) => {
 
 const everydayTransaction = async (req,res) => {
     try {
+
+        const { startingDate, endingDate } = req.body
+
+
+        const incomeResult = await Income.aggregate([
+            {
+                $match: {
+                    userId: req.user._id,
+                    date: {
+                        $gte: startingDate,
+                        $lte: endingDate
+                    }
+                }
+            },
+                {
+                $group:{
+                    _id : {
+                        date : "$date",
+                        gainFrom: "$gainFrom"
+                    },
+                    total:{
+                        $sum :{
+                            $toDouble : "$amount"
+                        }
+                    }
+                    }
+                },
+                {
+                    $sort : {
+                        "_id.date": 1
+                    }
+                }
+        ])
+
+        const cashIncome = []
+        const cardIncome = []
+        const mobileBankingIncome = []
+
+
+        incomeResult.forEach(item => {
+            const data = {
+                date: item._id.date,
+                amount: item.total
+            };
+            if(item._id.gainFrom === "Cash" ){
+                cashIncome.push(data)
+            }
+            else if(item._id.gainFrom === "Card"){
+                cardIncome.push(data)
+            }
+            else if (item._id.gainFrom === "Mobile Banking") {
+                mobileBankingIncome.push(data);
+            }
+        })
+
+
+
         
+        const expensesResult = await Expenses.aggregate([
+            {
+                $match: {
+                    userId: req.user._id,
+                    date: {
+                        $gte: startingDate,
+                        $lte: endingDate
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        date: "$date",
+                        expensesFrom: "$expensesFrom"
+                    },
+                    total: {
+                        $sum: {
+                            $toDouble: "$amount"
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    "_id.date": 1
+                }
+            }
+        ]);
+
+        const cashExpenses = [];
+        const cardExpenses = [];
+        const mobileBankingExpenses = [];
+
+        expensesResult.forEach(item => {
+            const data = {
+                date: item._id.date,
+                amount: item.total
+            };
+
+            if (item._id.expensesFrom === "Cash") {
+                cashExpenses.push(data);
+            } else if (item._id.expensesFrom === "Card") {
+                cardExpenses.push(data);
+            } else if (item._id.expensesFrom === "Mobile Banking") {
+                mobileBankingExpenses.push(data);
+            }
+        });
+
+            return res.json({
+                    incomeCash: cashIncome,
+                    incomeCard: cardIncome,
+                    incomeMobileBanking: mobileBankingIncome,
+                               
+                    expensesCash: cashExpenses,
+                    expensesCard: cardExpenses,
+                    expensesMobileBanking: mobileBankingExpenses
+                
+            });
 
 
         
     } catch (error) {
         return res.status(500).json({message:"something wrong in everyday Transaction", error})
+    }
+}
+
+
+const balance = async(req,res) => {
+    try {
+        const balance =await Balance.findOne({userId: req.user._id}).select('balance -_id')
+        // console.log(balance)
+        return res.status(200).json({message:"balance is working", balance})
+        
+    } catch (error) {
+        return res.status(500).json({message:'error in balance', error})
     }
 }
 
@@ -220,4 +353,4 @@ const updateTransaction = async (req, res) => {
 
 }
 
-export { getIncomeTransaction, getExpensesTransaction, updateTransaction, createExpenses, createIncome }
+export {balance, getIncomeTransaction, everydayTransaction, getExpensesTransaction, updateTransaction, createExpenses, createIncome }
