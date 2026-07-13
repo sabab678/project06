@@ -21,7 +21,10 @@ app.use(cors({
 
 
 app.get('/', (req, res) => {
-  res.send(`Hello World! ${process.env.env} and port ${process.env.CORS}`)
+  res.send(`Hello World! ${process.env.env} `)
+})
+app.get('/cors', (req, res) => {
+  res.send(`CORS ${process.env.CORS}`)
 })
 
 
