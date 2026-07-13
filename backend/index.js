@@ -21,7 +21,7 @@ app.use(cors({
 
 
 app.get('/', (req, res) => {
-  res.send(`Hello World! ${process.env.env} `)
+  res.send(`Hello World! bro`)
 })
 app.get('/cors', (req, res) => {
   res.send(`CORS is ${process.env.CORS}`)
